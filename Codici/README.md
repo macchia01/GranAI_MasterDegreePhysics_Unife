@@ -155,38 +155,65 @@ L'Excel di output contiene **tre fogli separati** per **Train, Validation e Test
 
 ---
 
-📁 Addestramento con FNN_Training_Validation.py
+# 📁 Addestramento con `FNN_Training_Validation.py`
 
-📂 Struttura delle Cartelle e File di Input
-
+## 📂 **Struttura delle Cartelle e File di Input**
 Il codice utilizza i dati suddivisi nei set precedenti:
-
+```
 Datasets/
 │── Dataset_X/
 │    ├── train_features.pkl
 │    ├── validation_features.pkl
+```
 
-📂 Struttura delle Cartelle e File di Output
-
+## 📂 **Struttura delle Cartelle e File di Output**
 Durante l'addestramento, vengono generati e salvati i modelli e i risultati:
-
+```
 Datasets/
 │── Training_Dataset_X/
 │    ├── modello_fcl_finale.keras
 │    ├── train_results.xlsx
 │    ├── mape_vs_epoch.png
 │    ├── loss_vs_epoch.png
+```
 
-🔥 Cosa fa il codice?
+## 🔥 **Cosa fa il codice?**
+- **Carica i dataset di training e validation.**
+- **Costruisce una rete neurale feedforward (FNN).**
+- **Allena il modello sulla base delle feature estratte.**
+- **Salva il modello finale e i risultati dell'addestramento.**
+- **Registra metriche come errore MAPE e loss per monitorare il training.**
 
-Carica i dataset di training e validation.
+➡️ Il modello addestrato verrà poi testato su dati non visti usando `Trained_FNN_Testing.py`.
 
-Costruisce una rete neurale feedforward (FNN).
 
-Allena il modello sulla base delle feature estratte.
+# 📁 Test del Modello con `Trained_FNN_Testing.py`
 
-Salva il modello finale e i risultati dell'addestramento.
+## 📂 **Struttura delle Cartelle e File di Input**
+Il codice utilizza il modello addestrato e il dataset di test:
+```
+Datasets/
+│── Training_Dataset_X/
+│    ├── modello_fcl_finale.keras
+│── Dataset_X/
+│    ├── test_features.pkl
+```
 
-Registra metriche come errore MAPE e loss per monitorare il training.
+## 📂 **Struttura delle Cartelle e File di Output**
+Durante il test, vengono generati e salvati i risultati:
+```
+Datasets/
+│── Fixed_Test_X/
+│    ├── test_results.xlsx
+```
 
-➡️ Il modello addestrato verrà poi testato su dati non visti usando Trained_FNN_Testing.py.
+## 🔥 **Cosa fa il codice?**
+- **Carica il modello FNN addestrato.**
+- **Carica il dataset di test e calcola le predizioni.**
+- **Valuta il modello calcolando la loss e il MAPE sul test set.**
+- **Salva i risultati in un file Excel (`test_results.xlsx`) con due fogli:**
+  - **Test Results**: metriche generali (loss, MAPE, tempo di esecuzione).
+  - **Plot Predictions**: predizioni dettagliate per ciascun plot, confrontando valori reali e predetti.
+
+➡️ **Questo passaggio verifica le performance del modello prima dell’utilizzo finale.**
+
