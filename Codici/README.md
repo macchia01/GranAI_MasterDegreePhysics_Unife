@@ -217,3 +217,47 @@ Datasets/
 
 ➡️ **Questo passaggio verifica le performance del modello prima dell’utilizzo finale.**
 
+
+# 📁 Ensemble Predictions con `Ensemble_Predictions.py`
+
+## 📂 **Struttura delle Cartelle e File di Input**
+
+Il codice raccoglie i risultati dei test da diverse esecuzioni e combina le predizioni:
+
+```
+Datasets/
+│── Fixed_Test/
+│    ├── Test_1/
+│    ├── Test_2/
+│    ├── ...
+│    ├── Test_N/
+```
+
+Ogni cartella contiene file Excel con le predizioni dei modelli su diversi test set:
+
+```
+Fixed_Test_X/
+│── test_results.xlsx  # Contiene il foglio 'Plot Predictions'
+```
+
+## 📂 **Struttura delle Cartelle e File di Output**
+
+Dopo aver aggregato i risultati, il codice genera un file di output:
+
+```
+Datasets/
+│── Fixed_Test/
+│    ├── Ensemble_Test/
+│        ├── Fixed_Test_final_predictions.xlsx
+```
+
+## 🔥 **Cosa fa il codice?**
+
+- **Scansiona tutte le cartelle ****`Fixed_Test_X/`**** per trovare i file Excel contenenti le predizioni.**
+- **Estrae i dati dalla colonna 'Predicted Yield' e li rinomina per evitare conflitti.**
+- **Unisce le predizioni dei diversi test set basandosi sulle colonne 'Plot' e 'Crop'.**
+- **Calcola la media e la deviazione standard della resa predetta per ciascun plot.**
+- **Salva i risultati aggregati in ****`Fixed_Test_final_predictions.xlsx`**** nel formato Excel.**
+
+➡️ **Questo step consente di ottenere una stima più robusta e affidabile della resa predetta, aggregando i risultati di più modelli testati.**
+

@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 
 # Definisci la directory principale e la directory di output
-main_directory = 'Datasets/Test'
+main_directory = 'Datasets/Fixed_Test'
 
 # Define the output directory within the main directory
 output_directory = os.path.join(main_directory, f'Ensemble_Test')
@@ -64,5 +64,6 @@ if dfs:
 
 else:
     print("Nessun file valido con il foglio 'Plot Predictions' trovato.")
+
 
 
