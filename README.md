@@ -15,6 +15,6 @@ Il modello sfrutta una **CNN pre-addestrata (EfficientNetB4)** per l'estrazione 
 
 - **[Tesi_NM.pdf](Tesi_NM.pdf)** → Tesi completa, con dettagli su dataset, metodologia e risultati.
 - **[Discussione_NM.pdf](Tesi_NM.pdf)** → Discussione di laurea.
-- **[Codici]** → Cartella con i codici
+- **[Codici] (./Codici/)** → Cartella con i codici
 
 
