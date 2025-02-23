@@ -1,5 +1,4 @@
 # Implementing-Deep-Neural-Networks-for-in-situ-crop-yield-prediction 🌾
-
 ---
 
 **Tesi di Laurea Magistrale in Fisica (Unife)** 
