@@ -13,8 +13,6 @@ Il modello sfrutta una **CNN pre-addestrata (EfficientNetB4)** per l'estrazione 
 
 # **Implementing Deep Neural Networks for in situ crop yield prediction 🌾**
 
-![Pipeline del Modello](images/image.png)
-
 ### 📜 Contenuto della Repository
 
 - **[Tesi_NM.pdf](Tesi_NM.pdf)** → Tesi completa, con dettagli su dataset, metodologia e risultati.
@@ -25,15 +23,4 @@ Il modello sfrutta una **CNN pre-addestrata (EfficientNetB4)** per l'estrazione 
   - `Trained_FNN_Testing.py` → Testa il modello FNN con il dataset di test.
   - `Ensemble_Predictions.py` → Combina predizioni di più modelli per migliorare l'accuratezza.
 
-# Implementing Deep Neural Networks for in situ crop yield prediction 🌾
 
-<div style="display: flex; align-items: center;">
-    <img src="images/image.png" alt="Pipeline del Modello" width="300" style="margin-right: 20px;">
-    <div>
-        <h2>Tesi di Laurea Magistrale in Fisica</h2>
-        <p><b>Titolo:</b> Implementing Deep Neural Networks for in situ crop yield prediction</p>
-        <p><b>Candidato:</b> Nicola Macchioni</p>
-        <p><b>Supervisore:</b> Prof. Fabio Mantovani</p>
-        <p><b>Anno Accademico:</b> 2023/2024 (Università degli Studi di Ferrara)</p>
-    </div>
-</div>
