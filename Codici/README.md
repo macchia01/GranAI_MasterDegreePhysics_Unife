@@ -155,4 +155,38 @@ L'Excel di output contiene **tre fogli separati** per **Train, Validation e Test
 
 ---
 
+📁 Addestramento con FNN_Training_Validation.py
 
+📂 Struttura delle Cartelle e File di Input
+
+Il codice utilizza i dati suddivisi nei set precedenti:
+
+Datasets/
+│── Dataset_X/
+│    ├── train_features.pkl
+│    ├── validation_features.pkl
+
+📂 Struttura delle Cartelle e File di Output
+
+Durante l'addestramento, vengono generati e salvati i modelli e i risultati:
+
+Datasets/
+│── Training_Dataset_X/
+│    ├── modello_fcl_finale.keras
+│    ├── train_results.xlsx
+│    ├── mape_vs_epoch.png
+│    ├── loss_vs_epoch.png
+
+🔥 Cosa fa il codice?
+
+Carica i dataset di training e validation.
+
+Costruisce una rete neurale feedforward (FNN).
+
+Allena il modello sulla base delle feature estratte.
+
+Salva il modello finale e i risultati dell'addestramento.
+
+Registra metriche come errore MAPE e loss per monitorare il training.
+
+➡️ Il modello addestrato verrà poi testato su dati non visti usando Trained_FNN_Testing.py.
