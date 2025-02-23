@@ -86,7 +86,7 @@ def process_complete_dataset(dataset_folder, excel_filename, batch_size=32):
             plot_features[plot_name] = np.mean(extract_features_in_batches(image_paths, batch_size=batch_size), axis=0)
 
     # Combine with yield and crop data
-    plot_info = df.set_index('Plot')[['RST', 'CROP']].to_dict('index')
+    plot_info = df.set_index('Plot')[['Yield', 'Crop']].to_dict('index')
 
     # Create a final dataset
     final_data = []
@@ -94,7 +94,7 @@ def process_complete_dataset(dataset_folder, excel_filename, batch_size=32):
         # Use the plot name directly to get the plot information
         plot_info_entry = plot_info.get(plot, None)
         if plot_info_entry is not None:
-            final_data.append((plot, features, plot_info_entry['RST'], plot_info_entry['CROP']))
+            final_data.append((plot, features, plot_info_entry['Yield'], plot_info_entry['Crop']))
 
     # Convert to a pandas DataFrame for easier handling
     final_df = pd.DataFrame(final_data, columns=['Plot', 'Features', 'Yield', 'Crop'])
