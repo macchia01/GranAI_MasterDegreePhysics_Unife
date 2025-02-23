@@ -49,11 +49,6 @@ Contiene metadati per ciascun plot:
 - Il modello **EfficientNetB4** (preaddestrato su ImageNet) estrae vettori di **1792 feature** da ciascuna immagine.
 - Per ogni **plot e augmentazione**, vengono estratti **77 vettori** (uno per immagine), che vengono **mediati** per ottenere un unico vettore rappresentativo.
 
-### **⚙️ Opzioni nel Codice**
-
-- **Includere immagini da tutti i survey** oppure **filtrarli**.
-- **Batch processing** per ottimizzare l'estrazione delle feature.
-
 ---
 
 ## 📂 Struttura dell'Output
@@ -101,7 +96,7 @@ Questa suddivisione avviene **100 volte**, con una nuova distribuzione per ogni 
 
 ## 📂 **Struttura delle Cartelle e File di Input**
 
-### **📁 Features/** *(Cartella contenente i dati delle feature estratte)*
+### **📁 Features/**
 ```
 Features/
 │── Features_training_dataset.pkl  # Pickle file con tutte le feature estratte
@@ -128,12 +123,10 @@ Datasets/
 ### **📄 Struttura Interna dei File Pickle**
 | Plot             | Feature Vector (1792-D) | RST   | Crop   |
 | ---------------- | ----------------------- | ----- | ------ |
-| 1033_flip_hor  | [-0.05, 0.17, ...]      | 52.22 | Duro   |
-| 1033_flip_vert | [0.06, -0.03, ...]      | 52.22 | Duro   |
-| 1034_original   | [0.12, 0.05, ...]       | 73.88 | Tenero |
+| 1033_flip_hor  | [-0.05, 0.17, ...]      | 52.22 | Frumento Duro   |
+| 1033_flip_vert | [0.06, -0.03, ...]      | 52.22 | Frumento Duro   |
+| 1034_original   | [0.12, 0.05, ...]       | 73.88 | Frumento Tenero |
 | ...              | ...                     | ...   | ...    |
-
----
 
 ## 📄 **Struttura Interna di `dataset_report.xlsx`**
 L'Excel di output contiene **tre fogli separati** per **Train, Validation e Test**, ognuno con la seguente struttura:
