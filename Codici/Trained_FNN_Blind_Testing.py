@@ -19,7 +19,7 @@ for i in range(1, 101):
     BATCH_SIZE = 16
 
     # Nome del file .pkl da caricare (specifica il nome del file)
-    pkl_filename = f'Features_blind_test_dataset.pkl'
+    pkl_filename = f'Features_Blind_Test.pkl'
     #pkl_filename = f'Allenamento_plot_aggregated_features_mean_augmentation_S5S8.pkl'
     dataset_dir = f'Dataset_{i}'
     # Directory settings

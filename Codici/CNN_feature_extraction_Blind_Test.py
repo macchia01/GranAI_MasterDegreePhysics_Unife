@@ -96,7 +96,7 @@ def process_complete_dataset(dataset_folder, excel_filename, batch_size=32):
     final_df = pd.DataFrame(final_data, columns=['Plot', 'Features', 'Crop'])
 
     # Save the resulting DataFrame to a file
-    output_path = os.path.join(feature_folder, f"{os.path.basename(feature_folder)}_blind_test_dataset.pkl")
+    output_path = os.path.join(feature_folder, f"{os.path.basename(feature_folder)}_Blind_Test.pkl")
     final_df.to_pickle(output_path)
 
     return final_df
