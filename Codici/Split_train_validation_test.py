@@ -4,8 +4,8 @@ import pickle
 import random
 
 # Set dataset and feature folder paths
-DATASET_FOLDER = 'Codici\Datasets'
-FEATURE_FOLDER = 'Codici\Features'
+DATASET_FOLDER = 'Datasets'
+FEATURE_FOLDER = 'Features'
 PICKLE_FILE_PATH = os.path.join(FEATURE_FOLDER, 'Features_Training_Dataset.pkl')
 
 # Load the pickle file
