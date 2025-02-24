@@ -5,67 +5,89 @@ import matplotlib.pyplot as plt
 
 
 # Definisci la directory principale e la directory di output
-main_directory = 'Datasets/Fixed_Test'
-# main_directory = 'Datasets/Blind_Test'
+# main_directory = 'Datasets/Fixed_Test'
+main_directory = 'Datasets/Blind_Test'
 
 # Define the output directory within the main directory
-output_directory = os.path.join(main_directory, f'Ensemble_Fixed_Test')
-# output_directory = os.path.join(main_directory, f'Ensemble_Blind_Test')
+#output_directory = os.path.join(main_directory, f'Ensemble_Fixed_Test')
+output_directory = os.path.join(main_directory, f'Ensemble_Blind_Test')
 
 # Crea la directory di output se non esiste
 if not os.path.exists(output_directory):
     os.makedirs(output_directory)
 
-# Lista per immagazzinare i dataframe
-dfs = []
+# Dictionary to store data
+data = {}
 
-# Scorri tutte le sottocartelle per trovare i file Excel
+# Scan all subdirectories for Excel files
 for root, dirs, files in os.walk(main_directory):
     for file in files:
         if file.endswith('.xlsx'):
             file_path = os.path.join(root, file)
             try:
-                # Carica il file Excel
+                # Load the Excel file
                 excel_data = pd.ExcelFile(file_path)
 
-                # Verifica se esiste il foglio 'Plot Predictions'
+                # Check if 'Plot Predictions' sheet exists
                 if 'Plot Predictions' in excel_data.sheet_names:
                     df = excel_data.parse('Plot Predictions')
 
-                    # Rinomina la colonna 'Predicted Yield' per evitare conflitti
-                    unique_identifier = len(dfs) + 1  # Può essere personalizzato se necessario
-                    df.rename(columns={'Predicted Yield': f'Predicted Yield_{unique_identifier}'}, inplace=True)
+                    # Ensure necessary columns exist
+                    if 'Plot' in df.columns and 'Crop' in df.columns and 'Predicted Yield' in df.columns:
+                        for _, row in df.iterrows():
+                            key = (row['Plot'], row['Crop'])  # Unique key (Plot, Crop)
 
-                    # Aggiungi il dataframe alla lista
-                    dfs.append(df)
+                            # Initialize entry if not exists
+                            if key not in data:
+                                data[key] = {'Predicted Yields': []}
+
+                            # Append predicted yield values
+                            data[key]['Predicted Yields'].append(row['Predicted Yield'])
+
+                            # Handle 'True Yield' (only keep one instance if present)
+                            if 'True Yield' in df.columns and not pd.isna(row['True Yield']):
+                                data[key]['True Yield'] = row['True Yield']
+                
                 else:
-                    print(f"Foglio non trovato in {file_path}")
+                    print(f"Sheet 'Plot Predictions' not found in {file_path}")
+
             except Exception as e:
-                print(f"Errore nel processare il file {file_path}: {e}")
+                print(f"Error processing file {file_path}: {e}")
 
-# Procedi solo se sono stati trovati file validi
-if dfs:
-    # Unisci i dataframe su 'Plot' e 'Crop' con suffissi per evitare conflitti
-    df_merged = dfs[0]
-    for df in dfs[1:]:
-        df_merged = pd.merge(df_merged, df, on=['Plot', 'Crop'], suffixes=('', f'_{len(dfs)}'))
+# Process collected data
+final_data = []
+for (plot, crop), values in data.items():
+    predicted_yields = values['Predicted Yields']
+    
+    # Calculate Mean and Standard Deviation
+    mean_predicted_yield = sum(predicted_yields) / len(predicted_yields) if predicted_yields else None
+    std_dev_predicted_yield = (pd.Series(predicted_yields).std() if len(predicted_yields) > 1 else 0)
 
-    # Calcola la media e la deviazione standard per le colonne di resa
-    yield_columns = [col for col in df_merged.columns if 'Predicted Yield' in col]
-    df_merged['Mean Yield'] = df_merged[yield_columns].mean(axis=1)
-    df_merged['Std Dev Yield'] = df_merged[yield_columns].std(axis=1)
+    # Build row dictionary
+    row = {
+        'Plot': plot,
+        'Crop': crop,
+        'Mean Predicted Yield': mean_predicted_yield,
+        'Std Dev Predicted Yield': std_dev_predicted_yield
+    }
 
-    # Crea il nome del file di output basato sul nome della directory principale
-    output_filename = os.path.basename(main_directory) + '_final_predictions.xlsx'
+    # Include 'True Yield' if it exists
+    if 'True Yield' in values:
+        row['True Yield'] = values['True Yield']
 
-    # Salva il dataframe unito nella directory di output
-    output_path = os.path.join(output_directory, output_filename)
-    df_merged.to_excel(output_path, index=False)
+    final_data.append(row)
 
-    print(f"File salvato correttamente in {output_path}")
+# Convert to DataFrame
+df_final = pd.DataFrame(final_data)
 
-else:
-    print("Nessun file valido con il foglio 'Plot Predictions' trovato.")
+# Define output file path
+output_filename = os.path.basename(main_directory) + '_final_predictions.xlsx'
+output_path = os.path.join(output_directory, output_filename)
+
+# Save to Excel
+df_final.to_excel(output_path, index=False)
+
+print(f"File saved successfully at {output_path}")
 
 
 
