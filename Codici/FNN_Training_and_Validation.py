@@ -14,7 +14,7 @@ from tensorflow.keras.applications import EfficientNetB4
 import matplotlib.pyplot as plt
 from matplotlib.legend_handler import HandlerLine2D
 
-for i in range (1,101):
+for i in range (49,101):
 
     ###########################################
     #IMPORTS

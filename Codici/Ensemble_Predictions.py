@@ -6,9 +6,11 @@ import matplotlib.pyplot as plt
 
 # Definisci la directory principale e la directory di output
 main_directory = 'Datasets/Fixed_Test'
+# main_directory = 'Datasets/Blind_Test'
 
 # Define the output directory within the main directory
-output_directory = os.path.join(main_directory, f'Ensemble_Test')
+output_directory = os.path.join(main_directory, f'Ensemble_Fixed_Test')
+# output_directory = os.path.join(main_directory, f'Ensemble_Blind_Test')
 
 # Crea la directory di output se non esiste
 if not os.path.exists(output_directory):
