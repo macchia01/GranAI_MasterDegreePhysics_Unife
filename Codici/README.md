@@ -1,7 +1,7 @@
 # GranAI
 *Implementing Deep Neural Networks for in situ crop yield prediction*
 
-Questo repository contiene il progetto **GranAI**, incentrato sull’utilizzo di **Deep Neural Networks** e di **immagini RGB da UAV** per la stima della resa del frumento (Duro e Tenero) in campo. Il lavoro è basato sulla tesi di laurea magistrale dal titolo *"Implementing Deep Neural Networks for in situ crop yield prediction"*, svolta presso [Laboratory for Nuclear Technologies Applied to the Environment](https://www.fe.infn.it/radioactivity/) in collaborazione con Società Sementi SPA.
+Questo repository contiene il progetto **GranAI**, incentrato sull’utilizzo di **Deep Neural Networks** e di **immagini RGB da UAV** per la stima della resa del frumento (Duro e Tenero). Il lavoro è basato sulla tesi di laurea magistrale dal titolo *"Implementing Deep Neural Networks for in situ crop yield prediction"*, svolta presso [Laboratory for Nuclear Technologies Applied to the Environment](https://www.fe.infn.it/radioactivity/) in collaborazione con Società Sementi SPA.
 
 ## Indice
 - [Contesto e Obiettivi](#contesto-e-obiettivi)
@@ -25,7 +25,7 @@ Il progetto **GranAI** nasce con l’obiettivo di sviluppare un sistema di *yiel
 - **EfficientNetB4** come CNN pre-addestrata per l’estrazione delle feature.
 - Una **Feedforward Neural Network (FNN)** personalizzata, responsabile della regressione finale sulla resa.
 
-La pipeline combina tecniche di *image processing*, *machine learning* e *transfer learning*, fornendo un framework completo dalla raccolta dati sul campo fino all’aggregazione finale delle predizioni (*Ensemble*) per una stima robusta della resa.
+La pipeline combina tecniche di *image processing*, *machine learning* e *transfer learning*, fornendo un framework completo dalla raccolta dati sul campo fino all’aggregazione finale delle predizioni (*Ensemble*) per una stima della resa.
 
 ---
 
@@ -56,7 +56,15 @@ Training_Dataset/
 │── ...
 ```
 
-Accanto alle immagini è presente anche un file Excel `Training_Dataset.xlsx`, con i **metadati** di ciascun plot.
+Accanto alle immagini è presente anche un file Excel `Training_Dataset.xlsx`, con i **metadati** di ciascun plot:
+
+| Plot             | RST (q/ha) | Crop          |
+| ---------------- | ---------- | ------------- |
+| 1033\_original   | 52.22      | Frumento Duro |
+| 1033\_flip\_hor  | 52.22      | Frumento Duro |
+| 1033\_flip\_vert | 52.22      | Frumento Duro |
+| 1033\_rotate\_90 | 52.22      | Frumento Duro |
+| ...              | ...        | ...           |
 
 ### Feature Extraction con EfficientNetB4
 Per ciascuna immagine (380×380 px), il modello **EfficientNetB4** (pre-addestrato su ImageNet) estrae un vettore di **1792 feature**. Avendo 77 immagini per ciascun plot + augmentazione, queste feature vengono **mediate** per ottenere un unico vettore rappresentativo per ogni combinazione *plot + augmentazione*.
@@ -68,6 +76,12 @@ Le feature estratte vengono salvate in formato Pickle (`.pkl`) all’interno di 
 Features/
 ├── Features_training_dataset.pkl
 ```
+| Plot             | Feature Vector (1792-D) | RST   | Crop   |
+| ---------------- | ----------------------- | ----- | ------ |
+| 1033_flip_hor  | [-0.05, 0.17, ...]      | 52.22 | Frumento Duro   |
+| 1033_flip_vert | [0.06, -0.03, ...]      | 52.22 | Frumento Duro   |
+| 1034_original   | [0.12, 0.05, ...]       | 73.88 | Frumento Tenero |
+| ...              | ...                     | ...   | ...    |
 
 ---
 
@@ -87,6 +101,10 @@ Datasets/
 │    ├── dataset_report.xlsx
 ...
 ```
+- Il **test set** include **solo le versioni originali** dei plot.
+- Le **versioni augmentate** di ciascun plot sono assegnate solo a **train e validation**.
+- **Train e Validation vengono reshufflati ad ogni iterazione**, mentre il **Test set rimane fisso**.
+- La selezione dei plot per il test è **random**, così come la ridistribuzione dei rimanenti in train e validation.
 
 ---
 
@@ -95,6 +113,7 @@ Datasets/
 - Carica i file `.pkl` di train e validation.
 - Costruisce una **Feedforward Neural Network (FNN)**.
 - Allena il modello e salva i risultati:
+- Ripetuto 100 iterazioni
 ```
 Datasets/
 │── Training_Dataset_X/
@@ -110,11 +129,12 @@ Datasets/
 Lo script `Trained_FNN_Testing.py` esegue il test del modello, calcolando:
 - **MAPE** e **loss** su `test_features.pkl`.
 - Salva i risultati in `test_results.xlsx`.
+- Ripetuto 100 iterazioni
 
 ---
 
 ## Ensemble Predictions
-`Ensemble_Predictions.py` aggrega le predizioni da diverse esecuzioni per una stima più robusta:
+`Ensemble_Predictions.py` aggrega le predizioni delle 100 iterazioni:
 ```
 Datasets/
 │── Fixed_Test/
