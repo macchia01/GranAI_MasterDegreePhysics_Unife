@@ -1,20 +1,46 @@
-# 📁 Struttura del Dataset e Feature Extraction
+# GranAI
+*Implementing Deep Neural Networks for in situ crop yield prediction*
 
-## 📂 **Struttura delle Cartelle e File di Input**
+Questo repository contiene il progetto **GranAI**, incentrato sull’utilizzo di **Deep Neural Networks** e di **immagini RGB da UAV** per la stima della resa del frumento (Duro e Tenero) in campo. Il lavoro è basato sulla tesi di laurea magistrale dal titolo *"Implementing Deep Neural Networks for in situ crop yield prediction"*, svolta presso [Laboratory for Nuclear Technologies Applied to the Environment](https://www.fe.infn.it/radioactivity/) in collaborazione con Società Sementi SPA.
 
-Il dataset contiene immagini di **914 plot** di frumento (Duro e Tenero), con **augmentazioni** applicate a ciascun plot. Le immagini sono organizzate come segue:
+## Indice
+- [Contesto e Obiettivi](#contesto-e-obiettivi)
+- [Dataset e Struttura delle Cartelle](#dataset-e-struttura-delle-cartelle)
+  - [Immagini dei Plot](#immagini-dei-plot)
+  - [Feature Extraction con EfficientNetB4](#feature-extraction-con-efficientnetb4)
+  - [File di Output](#file-di-output)
+- [Suddivisione in Train, Validation e Test](#suddivisione-in-train-validation-e-test)
+- [Addestramento con FNN](#addestramento-con-fnn)
+- [Test del Modello](#test-del-modello)
+- [Ensemble Predictions](#ensemble-predictions)
+- [Requisiti e Setup](#requisiti-e-setup)
+- [Come Citare il Lavoro](#come-citare-il-lavoro)
+- [Contatti](#contatti)
 
-### **📁 Training\_Dataset/**
+---
 
-📌 Contiene 914 plot con le seguenti augmentazioni:
+## Contesto e Obiettivi
+Il progetto **GranAI** nasce con l’obiettivo di sviluppare un sistema di *yield prediction* ad alta accuratezza per il frumento, sfruttando:
+- Immagini RGB acquisite da drone (UAV) a bassa quota, per catturare caratteristiche fenotipiche legate alla resa.
+- **EfficientNetB4** come CNN pre-addestrata per l’estrazione delle feature.
+- Una **Feedforward Neural Network (FNN)** personalizzata, responsabile della regressione finale sulla resa.
 
-- `_original`
-- `_flip_hor`
-- `_flip_vert`
-- `_rotate_90`
-- `_rotate_-90`
+La pipeline combina tecniche di *image processing*, *machine learning* e *transfer learning*, fornendo un framework completo dalla raccolta dati sul campo fino all’aggregazione finale delle predizioni (*Ensemble*) per una stima robusta della resa.
 
-Ogni cartella `PLOT_AUGMENTATION` contiene **77 immagini** (7 sezioni spaziali × 11 survey temporali):
+---
+
+## Dataset e Struttura delle Cartelle
+
+### Immagini dei Plot
+Il dataset comprende **914 plot** di frumento (sia Duro sia Tenero), con **augmentazioni** applicate a ciascun plot. Le immagini sono organizzate nella cartella principale `Training_Dataset/`:
+
+- Ogni **plot** presenta 5 versioni:
+  - `_original`
+  - `_flip_hor`
+  - `_flip_vert`
+  - `_rotate_90`
+  - `_rotate_-90`
+- In ciascuna di queste cartelle sono presenti **77 immagini** corrispondenti a 7 sezioni spaziali × 11 survey temporali (S1-S11).
 
 ```
 Training_Dataset/
@@ -30,144 +56,45 @@ Training_Dataset/
 │── ...
 ```
 
-### **📊 Excel File (****`Training_Dataset.xlsx`****)**
+Accanto alle immagini è presente anche un file Excel `Training_Dataset.xlsx`, con i **metadati** di ciascun plot.
 
-Contiene metadati per ciascun plot:
+### Feature Extraction con EfficientNetB4
+Per ciascuna immagine (380×380 px), il modello **EfficientNetB4** (pre-addestrato su ImageNet) estrae un vettore di **1792 feature**. Avendo 77 immagini per ciascun plot + augmentazione, queste feature vengono **mediate** per ottenere un unico vettore rappresentativo per ogni combinazione *plot + augmentazione*.
 
-| Plot             | RST (q/ha) | Crop          |
-| ---------------- | ---------- | ------------- |
-| 1033\_original   | 52.22      | Frumento Duro |
-| 1033\_flip\_hor  | 52.22      | Frumento Duro |
-| 1033\_flip\_vert | 52.22      | Frumento Duro |
-| 1033\_rotate\_90 | 52.22      | Frumento Duro |
-| ...              | ...        | ...           |
+Le feature estratte vengono salvate in formato Pickle (`.pkl`) all’interno di `Features/`.
 
----
-
-## 🏗 **Feature Extraction con EfficientNetB4**
-
-- Il modello **EfficientNetB4** (preaddestrato su ImageNet) estrae vettori di **1792 feature** da ciascuna immagine.
-- Per ogni **plot e augmentazione**, vengono estratti **77 vettori** (uno per immagine), che vengono **mediati** per ottenere un unico vettore rappresentativo.
-
----
-
-## 📂 Struttura dell'Output
-
-Le feature estratte vengono salvate in formato Pickle (`.pkl`).
-
-### **📁 Features/**
-
+#### File di Output
 ```
 Features/
-│── Features_training_dataset.pkl
-```
-
-### **📄 Contenuto di ****`Features_training_dataset.pkl`**
-
-| Plot | Feature Vector (1792-D)  | RST   | Crop            |
-| ---- | ------------------------ | ----- | --------------- |
-| 1033 | [-0.02, 0.13, ..., 0.87] | 52.22 | Frumento Duro   |
-| 1034 | [0.05, -0.07, ..., 0.92] | 73.88 | Frumento Tenero |
-| ...  | ...                      | ...   | ...             |
-
-**➡️ Questo file viene poi usato per addestrare il modello FNN di predizione della resa.**
-
-
-
-
-# 📁 Suddivisione dei Plot in Train, Validation e Test
-
-## 📂 **Struttura delle Cartelle e File di Input**
-
-Il codice prende i **914 plot** e li suddivide in:
-
-- **Train (70%)**
-- **Validation (20%)**
-- **Test (10%)**
-
-Questa suddivisione avviene **100 volte**, con una nuova distribuzione per ogni iterazione. La partizione viene fatta seguendo queste regole:
-
-- Il **test set** include **solo le versioni originali** dei plot.
-- Le **versioni augmentate** di ciascun plot sono assegnate solo a **train e validation**.
-- **Train e Validation vengono reshufflati ad ogni iterazione**, mentre il **Test set rimane fisso**.
-- La selezione dei plot per il test è **random**, così come la ridistribuzione dei rimanenti in train e validation.
-
----
-
-## 📂 **Struttura delle Cartelle e File di Input**
-
-### **📁 Features/**
-```
-Features/
-│── Features_training_dataset.pkl  # Pickle file con tutte le feature estratte
+├── Features_training_dataset.pkl
 ```
 
 ---
 
-## 📂 **Struttura delle Cartelle e File di Output**
-Per ogni iterazione (da 1 a 100), viene creata una cartella contenente i file filtrati:
+## Suddivisione in Train, Validation e Test
+La suddivisione in train, validation e test viene effettuata 100 volte per garantire robustezza:
+- **Train** (70%)
+- **Validation** (20%)
+- **Test** (10%) (solo plot *original*)
 
-### **📁 Datasets/** *(Contiene i sottoinsiemi generati)*
-```
-Datasets/
-│── Dataset_1/
-│    ├── train_features.pkl
-│    ├── validation_features.pkl
-│    ├── test_features.pkl
-│    ├── dataset_report.xlsx
-│── Dataset_2/
-│── ...
-│── Dataset_100/
-```
-
-### **📄 Struttura Interna dei File Pickle**
-| Plot             | Feature Vector (1792-D) | RST   | Crop   |
-| ---------------- | ----------------------- | ----- | ------ |
-| 1033_flip_hor  | [-0.05, 0.17, ...]      | 52.22 | Frumento Duro   |
-| 1033_flip_vert | [0.06, -0.03, ...]      | 52.22 | Frumento Duro   |
-| 1034_original   | [0.12, 0.05, ...]       | 73.88 | Frumento Tenero |
-| ...              | ...                     | ...   | ...    |
-
-## 📄 **Struttura Interna di `dataset_report.xlsx`**
-L'Excel di output contiene **tre fogli separati** per **Train, Validation e Test**, ognuno con la seguente struttura:
-
-#### **📑 Train Sheet**
-| Plot          | Crop         | RST (q/ha) |
-|--------------|-------------|------------|
-| 1033_flip_hor | Frumento Duro | 52.22 |
-| 1033_flip_vert | Frumento Duro | 52.22 |
-| 1034_rotate_90 | Frumento Tenero | 73.88 |
-| ...          | ...         | ... |
-
-#### **📑 Validation Sheet**
-| Plot          | Crop         | RST (q/ha) |
-|--------------|-------------|------------|
-| 1034_original | Frumento Tenero | 73.88 |
-| 1035_flip_hor | Frumento Duro | 65.55 |
-| ...          | ...         | ... |
-
-#### **📑 Test Sheet**
-| Plot          | Crop         | RST (q/ha) |
-|--------------|-------------|------------|
-| 1035_original | Frumento Duro | 65.55 |
-| 1036_original | Frumento Tenero | 78.12 |
-| ...          | ...         | ... |
-
----
-
-# 📁 Addestramento con `FNN_Training_Validation.py`
-
-## 📂 **Struttura delle Cartelle e File di Input**
-Il codice utilizza i dati suddivisi nei set precedenti:
+Il codice `Split_train_validation_test.py` genera i dataset:
 ```
 Datasets/
 │── Dataset_X/
 │    ├── train_features.pkl
 │    ├── validation_features.pkl
+│    ├── test_features.pkl
+│    ├── dataset_report.xlsx
+...
 ```
 
-## 📂 **Struttura delle Cartelle e File di Output**
-Durante l'addestramento, vengono generati e salvati i modelli e i risultati:
+---
+
+## Addestramento con FNN
+`FNN_Training_and_Validation.py`:
+- Carica i file `.pkl` di train e validation.
+- Costruisce una **Feedforward Neural Network (FNN)**.
+- Allena il modello e salva i risultati:
 ```
 Datasets/
 │── Training_Dataset_X/
@@ -177,87 +104,20 @@ Datasets/
 │    ├── loss_vs_epoch.png
 ```
 
-## 🔥 **Cosa fa il codice?**
-- **Carica i dataset di training e validation.**
-- **Costruisce una rete neurale feedforward (FNN).**
-- **Allena il modello sulla base delle feature estratte.**
-- **Salva il modello finale e i risultati dell'addestramento.**
-- **Registra metriche come errore MAPE e loss per monitorare il training.**
+---
 
-➡️ Il modello addestrato verrà poi testato su dati non visti usando `Trained_FNN_Testing.py`.
+## Test del Modello
+Lo script `Trained_FNN_Testing.py` esegue il test del modello, calcolando:
+- **MAPE** e **loss** su `test_features.pkl`.
+- Salva i risultati in `test_results.xlsx`.
 
+---
 
-# 📁 Test del Modello con `Trained_FNN_Testing.py`
-
-## 📂 **Struttura delle Cartelle e File di Input**
-Il codice utilizza il modello addestrato e il dataset di test:
-```
-Datasets/
-│── Training_Dataset_X/
-│    ├── modello_fcl_finale.keras
-│── Dataset_X/
-│    ├── test_features.pkl
-```
-
-## 📂 **Struttura delle Cartelle e File di Output**
-Durante il test, vengono generati e salvati i risultati:
-```
-Datasets/
-│── Fixed_Test_X/
-│    ├── test_results.xlsx
-```
-
-## 🔥 **Cosa fa il codice?**
-- **Carica il modello FNN addestrato.**
-- **Carica il dataset di test e calcola le predizioni.**
-- **Valuta il modello calcolando la loss e il MAPE sul test set.**
-- **Salva i risultati in un file Excel (`test_results.xlsx`) con due fogli:**
-  - **Test Results**: metriche generali (loss, MAPE, tempo di esecuzione).
-  - **Plot Predictions**: predizioni dettagliate per ciascun plot, confrontando valori reali e predetti.
-
-➡️ **Questo passaggio verifica le performance del modello prima dell’utilizzo finale.**
-
-
-# 📁 Ensemble Predictions con `Ensemble_Predictions.py`
-
-## 📂 **Struttura delle Cartelle e File di Input**
-
-Il codice raccoglie i risultati dei test da diverse esecuzioni e combina le predizioni:
-
-```
-Datasets/
-│── Fixed_Test/
-│    ├── Test_1/
-│    ├── Test_2/
-│    ├── ...
-│    ├── Test_N/
-```
-
-Ogni cartella contiene file Excel con le predizioni dei modelli su diversi test set:
-
-```
-Fixed_Test_X/
-│── test_results.xlsx  # Contiene il foglio 'Plot Predictions'
-```
-
-## 📂 **Struttura delle Cartelle e File di Output**
-
-Dopo aver aggregato i risultati, il codice genera un file di output:
-
+## Ensemble Predictions
+`Ensemble_Predictions.py` aggrega le predizioni da diverse esecuzioni per una stima più robusta:
 ```
 Datasets/
 │── Fixed_Test/
 │    ├── Ensemble_Test/
 │        ├── Fixed_Test_final_predictions.xlsx
 ```
-
-## 🔥 **Cosa fa il codice?**
-
-- **Scansiona tutte le cartelle ****`Fixed_Test_X/`**** per trovare i file Excel contenenti le predizioni.**
-- **Estrae i dati dalla colonna 'Predicted Yield' e li rinomina per evitare conflitti.**
-- **Unisce le predizioni dei diversi test set basandosi sulle colonne 'Plot' e 'Crop'.**
-- **Calcola la media e la deviazione standard della resa predetta per ciascun plot.**
-- **Salva i risultati aggregati in ****`Fixed_Test_final_predictions.xlsx`**** nel formato Excel.**
-
-➡️ **Questo step consente di ottenere una stima più robusta e affidabile della resa predetta, aggregando i risultati di più modelli testati.**
-
