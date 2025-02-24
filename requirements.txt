@@ -1,0 +1,17 @@
+tensorflow>=2.0
+numpy
+pandas
+opencv-python
+matplotlib
+tqdm
+scipy
+scikit-learn
+openpyxl
+seaborn
+xlrd
+tensorflow.keras
+h5py
+pickle
+os
+time
+random
