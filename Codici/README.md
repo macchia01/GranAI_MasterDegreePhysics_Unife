@@ -13,9 +13,6 @@ Questo repository contiene il progetto **GranAI**, incentrato sull’utilizzo di
 - [Addestramento con FNN](#addestramento-con-fnn)
 - [Test del Modello](#test-del-modello)
 - [Ensemble Predictions](#ensemble-predictions)
-- [Requisiti e Setup](#requisiti-e-setup)
-- [Come Citare il Lavoro](#come-citare-il-lavoro)
-- [Contatti](#contatti)
 
 ---
 
