@@ -18,8 +18,5 @@ Il modello sfrutta una **CNN pre-addestrata (EfficientNetB4)** per l'estrazione 
 <<<<<<< HEAD
 - **[Codici]** (Codici/) → Cartella con i codici
 - **[Librerie](Requirements.txt)** → Cartella con i codici
-=======
-- **[Codici](Codici/)** → Cartella con i codici
->>>>>>> e364903a8372daaceac31d54bc47a15eee35c456
 
 
