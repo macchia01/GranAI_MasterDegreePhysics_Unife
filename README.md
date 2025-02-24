@@ -1,15 +1,6 @@
-# Implementing-Deep-Neural-Networks-for-in-situ-crop-yield-prediction 🌾
+# GranAI: Implementing-Deep-Neural-Networks-for-in-situ-crop-yield-prediction 🌾
 
-**Tesi di Laurea Magistrale in Fisica (Unife)** 
-**Titolo:** Implementing Deep Neural Networks for in situ crop yield prediction  
-**Candidato:** Nicola Macchioni  
-**Supervisore:** Prof. Fabio Mantovani  
-**Anno Accademico:** 2023/2024
-
-## 📖 Descrizione del Progetto
-
-Questo progetto implementa una pipeline basata su **Deep Neural Networks (DNN)** per la predizione della resa del grano utilizzando immagini RGB acquisite da **UAV (DJI Air 2S)**.  
-Il modello sfrutta una **CNN pre-addestrata (EfficientNetB4)** per l'estrazione delle feature, seguita da un **Feedforward Neural Network (FNN)** per la regressione.
+Questo repository contiene il progetto **GranAI**, incentrato sull’utilizzo di **Deep Neural Networks** e di **immagini RGB da UAV** per la stima della resa del frumento (Duro e Tenero). Il lavoro è basato sulla tesi di laurea magistrale dal titolo *"Implementing Deep Neural Networks for in situ crop yield prediction"*, svolta presso [Laboratory for Nuclear Technologies Applied to the Environment](https://www.fe.infn.it/radioactivity/) in collaborazione con Società Sementi SPA
 
 ### 📜 Contenuto della Repository
 
